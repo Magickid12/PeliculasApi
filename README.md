@@ -2,47 +2,78 @@
 
 ## Descripción
 
-Esta es una API RESTful que permite gestionar información de películas y usuarios. Permite consultar detalles de películas, registrar usuarios, iniciar sesión y administrar una lista de películas favoritas.
+API RESTful para gestionar información de películas y usuarios. Permite consultar, buscar, crear y administrar películas, así como registrar usuarios y gestionar favoritos.
 
 ## Tecnologías utilizadas
 
-- **Node.js** como entorno de ejecución.
-- **Express.js** como framework backend.
-- **MongoDB** como base de datos NoSQL.
-- **Mongoose** para el modelado de datos.
-- **JWT (jsonwebtoken)** para autenticación basada en tokens.
-- **Passport.js** para autenticación con estrategia JWT.
-- **Bcrypt** para el hash de contraseñas.
-- **Express-validator** para validación de datos.
-- **CORS** para permitir el consumo de la API desde otras aplicaciones.
+- Node.js, Express.js, MongoDB Atlas, Mongoose
+- JWT (jsonwebtoken), Passport.js, Bcrypt
+- Express-validator, CORS
 
-## Funcionalidades principales
+## Estructura del proyecto
 
-- Registro y autenticación de usuarios.
-- CRUD de usuarios (actualización, eliminación, obtener datos).
-- Consultar todas las películas o una por título.
-- Consultar películas por género o director.
-- Agregar o eliminar películas favoritas de un usuario.
+- `index.js`: punto de entrada de la app
+- `models/`: esquemas de Mongoose para películas y usuarios
+- `routes/`: rutas de la API (usuarios, películas, login)
+- `middleware/`: Passport, Swagger y middlewares
+- `prueba.html`: frontend de prueba para consumir la API
+- `seed.js`: script para poblar la base de datos con datos de ejemplo
 
-## Cómo ejecutar el proyecto
+## Instalación y uso
 
-1. Clonar el repositorio:
-```bash
-git clone https://github.com/tu-usuario/Movie-API.git
-cd Movie-API
+1. Clona el repositorio y entra a la carpeta:
+   ```bash
+   git clone <repo-url>
+   cd Movie-API
+   ```
+2. Instala dependencias:
+   ```bash
+   npm install
+   ```
+3. Crea un archivo `.env` con:
+   ```env
+   CONNECTION_URI=<tu cadena de conexión de MongoDB Atlas>
+   JWT_SECRET=<tu secreto JWT>
+   PORT=8080
+   ```
+4. (Opcional ASEGURATE ANTES QUE LA BASE DE DATOS NO ESTE POBLADA YA) Pobla la base de datos con datos de ejemplo:
+   ```bash
+   ejecuta node seed.js 
+   ```
+5. Inicia el servidor:
+   ```bash
+   npm start
+   ```
+6. La API estará disponible en: http://localhost:8080
 
-Instalar dependencias:
+## Uso de la API
 
-npm install
+- La autenticación es por JWT. Usa `/login` para obtener un token y agrégalo como `Bearer <token>` en el header `Authorization` para endpoints protegidos.
+- Consulta la documentación interactiva en `/docs` (Swagger UI).
 
-Crear un archivo .env con el siguiente contenido:
+## Ejemplo de flujo de autenticación
 
-CONNECTION_URI=mongodb://localhost:27017/moviesdb
-PORT=8080
+1. POST `/login` con usuario y contraseña → recibe un JWT.
+2. Usa ese JWT en el frontend para consumir endpoints protegidos.
 
-Iniciar el servidor:
+## Ejemplo de endpoints principales
 
-npm run start
+- POST `/users` — registro de usuario
+- POST `/login` — login y obtención de JWT
+- GET `/movies` — lista de películas (protegido)
+- GET `/movies/search/{query}` — búsqueda flexible de películas
+- POST `/movies` — crear película (protegido)
 
-La API estará disponible en: http://localhost:8080
+## CORS
+
+CORS está habilitado para permitir peticiones desde el frontend.
+
+## Manejo de errores
+
+Todos los endpoints devuelven mensajes claros y consistentes en caso de error (campos faltantes, validaciones, etc).
+
+## Seguridad
+
+- No subas tu `.env` ni el secreto JWT a repositorios públicos.
+- Cambia el secreto JWT antes de producción.
 

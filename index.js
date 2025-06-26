@@ -46,6 +46,7 @@ app.use(morgan('combined', {stream: accessLogStream}));
 // DOCUMENTATION
 const swaggerDocument = YAML.load('./middleware/swagger.yaml');
 app.use('/documentation.html', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
 // BODY PARSER
