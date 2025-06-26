@@ -10,6 +10,60 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    Movie:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID generado de la película
+          example: 624e9ae5122deed3780f1f66
+        Title:
+          type: string
+          description: Título de la película
+          example: WALL-E
+        Description:
+          type: string
+          description: Sinopsis de la película
+          example: WALL-E sigue a un robot solitario en la Tierra desierta del futuro...
+        Genre:
+          type: object
+          properties:
+            Name:
+              type: string
+              description: Género de la película
+              example: Ciencia ficción
+            Description:
+              type: string
+              description: Descripción del género
+              example: Películas futuristas...
+        Director:
+          type: object
+          properties:
+            Name:
+              type: string
+              description: Nombre del director
+              example: Andrew Stanton
+            Bio:
+              type: string
+              description: Biografía del director
+              example: Andrew Stanton nació en Rockport...
+            Birth:
+              type: string
+              description: Año de nacimiento
+              example: 1965
+            Death:
+              type: string
+              description: Año de fallecimiento
+              example: 2015
+        ImageURL:
+          type: string
+          description: URL pública y directa a una imagen (jpg, jpeg, png, webp, gif)
+          example: https://i.imgur.com/ejemplo.jpg
+        Featured:
+          type: boolean
+          description: Si la película es destacada
+          example: true
 paths:
   /login:
     post:
@@ -217,6 +271,81 @@ paths:
                     Featured:
                       type: boolean
                       example: true
+    post:
+      summary: Crear una nueva película
+      tags:
+        - movies
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Title:
+                  type: string
+                  example: Tron el legado
+                Description:
+                  type: string
+                  example: Película de ciencia ficción...
+                Genre:
+                  type: object
+                  properties:
+                    Name:
+                      type: string
+                      example: Ciencia ficción
+                    Description:
+                      type: string
+                      example: Género de películas futuristas
+                Director:
+                  type: object
+                  properties:
+                    Name:
+                      type: string
+                      example: Joseph Kosinski
+                    Bio:
+                      type: string
+                      example: Director estadounidense...
+                    Birth:
+                      type: string
+                      example: 1974
+                    Death:
+                      type: string
+                      example: ""
+                ImageURL:
+                  type: string
+                  description: >-
+                    URL pública y directa a una imagen (jpg, jpeg, png, webp, gif).
+                    Solo se aceptan imágenes de los siguientes dominios:
+                    - Imgur (https://i.imgur.com/)
+                    - Unsplash (https://images.unsplash.com/)
+                    - Picsum (https://i.picsum.photos/)
+                    - Pixabay (https://cdn.pixabay.com/)
+                    - Giphy (https://media.giphy.com/)
+                    - Freepik (https://img.freepik.com/)
+                    - ibb.co (https://i.ibb.co/)
+                    Ejemplos válidos:
+                    - https://i.imgur.com/ejemplo.jpg
+                    - https://images.unsplash.com/photo-1234567890.png
+                    - https://i.picsum.photos/id/1002/200/300.jpg
+                    - https://cdn.pixabay.com/photo/2020/01/01/12/34/example.png
+                  example: https://i.imgur.com/ejemplo.jpg
+                Featured:
+                  type: boolean
+                  example: true
+      responses:
+        '201':
+          description: Película creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '400':
+          description: Faltan campos obligatorios
+        '500':
+          description: Error al crear la película
   /movies/{title}:
     parameters:
       - name: title
@@ -472,6 +601,36 @@ paths:
                 example: Tom was deleted.
         '400':
           description: bad request, user was not found.
+  /movies/search/{query}:
+    parameters:
+      - name: query
+        in: path
+        description: Término de búsqueda parcial o incompleto del título de la película
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Buscar películas por coincidencia parcial en el título
+      tags:
+        - movies
+      security:
+        - bearerAuth: []
+      description: |
+        Busca películas cuyo título contenga el texto proporcionado, sin importar mayúsculas/minúsculas ni coincidencia exacta.
+        Útil si no recuerdas el nombre completo o exacto de la película.
+      responses:
+        '200':
+          description: Lista de películas que coinciden con la búsqueda
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+        '404':
+          description: No se encontraron películas que coincidan con la búsqueda
+        '500':
+          description: Error al buscar películas
 security:
   - bearerAuth: []
 tags:

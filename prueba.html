@@ -137,32 +137,42 @@
     document.getElementById('loginForm').onsubmit = async e => {
       e.preventDefault();
       const data = Object.fromEntries(new FormData(e.target));
+      console.log('Login data:', data);
       const res = await fetch(`${API}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      document.getElementById('loginResult').textContent = await res.text();
+      const text = await res.text();
+      console.log('Login response:', text);
+      document.getElementById('loginResult').textContent = text;
+      try {
+        const json = JSON.parse(text);
+        if(json.token) {
+          localStorage.setItem('jwt', json.token);
+          console.log('JWT guardado en localStorage:', json.token);
+        }
+      } catch (err) { console.log('Error parseando login response:', err); }
     };
 
-    // CREAR USUARIO
-    document.getElementById('createUserForm').onsubmit = async e => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(e.target));
-      const res = await fetch(`${API}/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      document.getElementById('createUserResult').textContent = await res.text();
-    };
+    // Función para obtener el token guardado
+    function getToken() {
+      const token = localStorage.getItem('jwt') || '';
+      console.log('Token usado:', token);
+      return token;
+    }
 
     // MOSTRAR USUARIO
     document.getElementById('getUserForm').onsubmit = async e => {
       e.preventDefault();
       const Name = e.target.Name.value;
-      const res = await fetch(`${API}/users/${encodeURIComponent(Name)}`);
-      document.getElementById('getUserResult').textContent = await res.text();
+      console.log('GET usuario:', Name);
+      const res = await fetch(`${API}/users/${encodeURIComponent(Name)}`, {
+        headers: { 'Authorization': 'Bearer ' + getToken() }
+      });
+      const text = await res.text();
+      console.log('Respuesta GET usuario:', text);
+      document.getElementById('getUserResult').textContent = text;
     };
 
     // ACTUALIZAR USUARIO
@@ -171,22 +181,29 @@
       const data = Object.fromEntries(new FormData(e.target));
       const Name = data.Name;
       delete data.Name;
+      console.log('PUT usuario:', Name, data);
       const res = await fetch(`${API}/users/${encodeURIComponent(Name)}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
         body: JSON.stringify(data)
       });
-      document.getElementById('updateUserResult').textContent = await res.text();
+      const text = await res.text();
+      console.log('Respuesta PUT usuario:', text);
+      document.getElementById('updateUserResult').textContent = text;
     };
 
     // ELIMINAR USUARIO
     document.getElementById('deleteUserForm').onsubmit = async e => {
       e.preventDefault();
       const Name = e.target.Name.value;
+      console.log('DELETE usuario:', Name);
       const res = await fetch(`${API}/users/${encodeURIComponent(Name)}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + getToken() }
       });
-      document.getElementById('deleteUserResult').textContent = await res.text();
+      const text = await res.text();
+      console.log('Respuesta DELETE usuario:', text);
+      document.getElementById('deleteUserResult').textContent = text;
     };
 
     // AGREGAR PELÍCULA FAVORITA
@@ -194,10 +211,14 @@
       e.preventDefault();
       const Name = e.target.Name.value;
       const Title = e.target.Title.value;
+      console.log('POST fav:', Name, Title);
       const res = await fetch(`${API}/users/${encodeURIComponent(Name)}/movies/${encodeURIComponent(Title)}`, {
-        method: 'POST'
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + getToken() }
       });
-      document.getElementById('addFavResult').textContent = await res.text();
+      const text = await res.text();
+      console.log('Respuesta POST fav:', text);
+      document.getElementById('addFavResult').textContent = text;
     };
 
     // ELIMINAR PELÍCULA FAVORITA
@@ -205,40 +226,64 @@
       e.preventDefault();
       const Name = e.target.Name.value;
       const Title = e.target.Title.value;
+      console.log('DELETE fav:', Name, Title);
       const res = await fetch(`${API}/users/${encodeURIComponent(Name)}/movies/${encodeURIComponent(Title)}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + getToken() }
       });
-      document.getElementById('delFavResult').textContent = await res.text();
+      const text = await res.text();
+      console.log('Respuesta DELETE fav:', text);
+      document.getElementById('delFavResult').textContent = text;
     };
 
     // LISTAR PELÍCULAS
     document.getElementById('getMoviesBtn').onclick = async () => {
-      const res = await fetch(`${API}/movies`);
-      document.getElementById('getMoviesResult').textContent = await res.text();
+      console.log('GET todas las películas');
+      const res = await fetch(`${API}/movies`, {
+        headers: { 'Authorization': 'Bearer ' + getToken() }
+      });
+      const text = await res.text();
+      console.log('Respuesta GET películas:', text);
+      document.getElementById('getMoviesResult').textContent = text;
     };
 
     // BUSCAR PELÍCULA POR TÍTULO
     document.getElementById('getMovieForm').onsubmit = async e => {
       e.preventDefault();
       const Title = e.target.Title.value;
-      const res = await fetch(`${API}/movies/${encodeURIComponent(Title)}`);
-      document.getElementById('getMovieResult').textContent = await res.text();
+      console.log('GET película por título:', Title);
+      const res = await fetch(`${API}/movies/${encodeURIComponent(Title)}`, {
+        headers: { 'Authorization': 'Bearer ' + getToken() }
+      });
+      const text = await res.text();
+      console.log('Respuesta GET película por título:', text);
+      document.getElementById('getMovieResult').textContent = text;
     };
 
     // BUSCAR GÉNERO
     document.getElementById('getGenreForm').onsubmit = async e => {
       e.preventDefault();
       const Name = e.target.Name.value;
-      const res = await fetch(`${API}/movies/genre/${encodeURIComponent(Name)}`);
-      document.getElementById('getGenreResult').textContent = await res.text();
+      console.log('GET género:', Name);
+      const res = await fetch(`${API}/movies/genre/${encodeURIComponent(Name)}`, {
+        headers: { 'Authorization': 'Bearer ' + getToken() }
+      });
+      const text = await res.text();
+      console.log('Respuesta GET género:', text);
+      document.getElementById('getGenreResult').textContent = text;
     };
 
     // BUSCAR DIRECTOR
     document.getElementById('getDirectorForm').onsubmit = async e => {
       e.preventDefault();
       const Name = e.target.Name.value;
-      const res = await fetch(`${API}/movies/director/${encodeURIComponent(Name)}`);
-      document.getElementById('getDirectorResult').textContent = await res.text();
+      console.log('GET director:', Name);
+      const res = await fetch(`${API}/movies/director/${encodeURIComponent(Name)}`, {
+        headers: { 'Authorization': 'Bearer ' + getToken() }
+      });
+      const text = await res.text();
+      console.log('Respuesta GET director:', text);
+      document.getElementById('getDirectorResult').textContent = text;
     };
   </script>
 </body>

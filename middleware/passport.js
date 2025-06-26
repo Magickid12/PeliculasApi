@@ -1,4 +1,3 @@
-
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const passportJWT = require('passport-jwt');
@@ -33,13 +32,18 @@ passport.use(new LocalStrategy({
 
 passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-    secretOrKey: 'your_jwt_secret'
+    secretOrKey: process.env.JWT_SECRET || 'your_jwt_secret'
 }, (jwtPayload, callback) => {
+    console.log('JWT recibido:', jwtPayload);
     return Users.findById(jwtPayload._id)
         .then((user) => {
+            if (!user) {
+                console.log('Usuario no encontrado con _id:', jwtPayload._id);
+            }
             return callback(null, user);
         })
         .catch((error) => {
+            console.log('Error buscando usuario por JWT:', error);
             return callback(error)
         });
 }));
