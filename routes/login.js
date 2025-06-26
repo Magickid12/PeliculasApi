@@ -1,6 +1,6 @@
 const express = require('express');
 
-const jwtSecret = 'your_jwt_secret';
+const jwtSecret = process.env.JWT_SECRET || 'your_jwt_secret';
 const jwt = require('jsonwebtoken'),
     passport = require('passport');
 require('../middleware/passport');

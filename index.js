@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
@@ -19,7 +20,22 @@ const dsnConnection = process.env.CONNECTION_URI || 'mongodb://localhost:27017/t
 
 
 // CONNECT DATABASE AND REST API
-mongoose.connect(dsnConnection, {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(dsnConnection, {useNewUrlParser: true, useUnifiedTopology: true})
+  .then(() => console.log('✅ Conexión exitosa a MongoDB Atlas'))
+  .catch(err => {
+    console.error('❌ Error al conectar a MongoDB Atlas:');
+    if (err.message) {
+      if (err.message.includes('failed to connect')) {
+        console.error('No se pudo conectar al servidor de MongoDB. Verifica tu URI y tu conexión a internet.');
+      } else if (err.message.includes('authentication')) {
+        console.error('Error de autenticación. Verifica usuario y contraseña en la URI.');
+      } else {
+        console.error(err.message);
+      }
+    } else {
+      console.error(err);
+    }
+  });
 
 
 // LOGGING

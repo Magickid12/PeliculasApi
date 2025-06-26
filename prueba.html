@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Prueba de Endpoints Movie API</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    section { border: 1px solid #ccc; padding: 16px; margin-bottom: 20px; border-radius: 8px; }
+    label { display: block; margin-top: 8px; }
+    input, button { margin-top: 4px; }
+    pre { background: #f4f4f4; padding: 8px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Prueba de Endpoints Movie API</h1>
+
+  <!-- LOGIN -->
+  <section>
+    <h2>Login</h2>
+    <form id="loginForm">
+      <label>Usuario: <input name="Name" required></label>
+      <label>Contraseña: <input name="Password" type="password" required></label>
+      <button type="submit">Login</button>
+    </form>
+    <pre id="loginResult"></pre>
+  </section>
+
+  <!-- CREAR USUARIO -->
+  <section>
+    <h2>Crear Usuario</h2>
+    <form id="createUserForm">
+      <label>Nombre: <input name="Name" required></label>
+      <label>Contraseña: <input name="Password" type="password" required></label>
+      <label>Email: <input name="Email" type="email" required></label>
+      <label>Fecha de nacimiento: <input name="Birthday" type="date" required></label>
+      <button type="submit">Crear</button>
+    </form>
+    <pre id="createUserResult"></pre>
+  </section>
+
+  <!-- MOSTRAR USUARIO -->
+  <section>
+    <h2>Mostrar Usuario</h2>
+    <form id="getUserForm">
+      <label>Nombre: <input name="Name" required></label>
+      <button type="submit">Buscar</button>
+    </form>
+    <pre id="getUserResult"></pre>
+  </section>
+
+  <!-- ACTUALIZAR USUARIO -->
+  <section>
+    <h2>Actualizar Usuario</h2>
+    <form id="updateUserForm">
+      <label>Nombre: <input name="Name" required></label>
+      <label>Nueva Contraseña: <input name="Password" type="password"></label>
+      <label>Nuevo Email: <input name="Email" type="email"></label>
+      <label>Nueva Fecha de nacimiento: <input name="Birthday" type="date"></label>
+      <button type="submit">Actualizar</button>
+    </form>
+    <pre id="updateUserResult"></pre>
+  </section>
+
+  <!-- ELIMINAR USUARIO -->
+  <section>
+    <h2>Eliminar Usuario</h2>
+    <form id="deleteUserForm">
+      <label>Nombre: <input name="Name" required></label>
+      <button type="submit">Eliminar</button>
+    </form>
+    <pre id="deleteUserResult"></pre>
+  </section>
+
+  <!-- AGREGAR PELÍCULA FAVORITA -->
+  <section>
+    <h2>Agregar Película Favorita</h2>
+    <form id="addFavForm">
+      <label>Usuario: <input name="Name" required></label>
+      <label>Título de la película: <input name="Title" required></label>
+      <button type="submit">Agregar</button>
+    </form>
+    <pre id="addFavResult"></pre>
+  </section>
+
+  <!-- ELIMINAR PELÍCULA FAVORITA -->
+  <section>
+    <h2>Eliminar Película Favorita</h2>
+    <form id="delFavForm">
+      <label>Usuario: <input name="Name" required></label>
+      <label>Título de la película: <input name="Title" required></label>
+      <button type="submit">Eliminar</button>
+    </form>
+    <pre id="delFavResult"></pre>
+  </section>
+
+  <!-- LISTAR PELÍCULAS -->
+  <section>
+    <h2>Listar Todas las Películas</h2>
+    <button id="getMoviesBtn">Mostrar Películas</button>
+    <pre id="getMoviesResult"></pre>
+  </section>
+
+  <!-- BUSCAR PELÍCULA POR TÍTULO -->
+  <section>
+    <h2>Buscar Película por Título</h2>
+    <form id="getMovieForm">
+      <label>Título: <input name="Title" required></label>
+      <button type="submit">Buscar</button>
+    </form>
+    <pre id="getMovieResult"></pre>
+  </section>
+
+  <!-- BUSCAR GÉNERO -->
+  <section>
+    <h2>Buscar Género</h2>
+    <form id="getGenreForm">
+      <label>Nombre del género: <input name="Name" required></label>
+      <button type="submit">Buscar</button>
+    </form>
+    <pre id="getGenreResult"></pre>
+  </section>
+
+  <!-- BUSCAR DIRECTOR -->
+  <section>
+    <h2>Buscar Director</h2>
+    <form id="getDirectorForm">
+      <label>Nombre del director: <input name="Name" required></label>
+      <button type="submit">Buscar</button>
+    </form>
+    <pre id="getDirectorResult"></pre>
+  </section>
+
+  <script>
+    const API = 'http://localhost:8080'; // Cambia si tu API está en otro host
+
+    // LOGIN
+    document.getElementById('loginForm').onsubmit = async e => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      const res = await fetch(`${API}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      document.getElementById('loginResult').textContent = await res.text();
+    };
+
+    // CREAR USUARIO
+    document.getElementById('createUserForm').onsubmit = async e => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      const res = await fetch(`${API}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      document.getElementById('createUserResult').textContent = await res.text();
+    };
+
+    // MOSTRAR USUARIO
+    document.getElementById('getUserForm').onsubmit = async e => {
+      e.preventDefault();
+      const Name = e.target.Name.value;
+      const res = await fetch(`${API}/users/${encodeURIComponent(Name)}`);
+      document.getElementById('getUserResult').textContent = await res.text();
+    };
+
+    // ACTUALIZAR USUARIO
+    document.getElementById('updateUserForm').onsubmit = async e => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      const Name = data.Name;
+      delete data.Name;
+      const res = await fetch(`${API}/users/${encodeURIComponent(Name)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      document.getElementById('updateUserResult').textContent = await res.text();
+    };
+
+    // ELIMINAR USUARIO
+    document.getElementById('deleteUserForm').onsubmit = async e => {
+      e.preventDefault();
+      const Name = e.target.Name.value;
+      const res = await fetch(`${API}/users/${encodeURIComponent(Name)}`, {
+        method: 'DELETE'
+      });
+      document.getElementById('deleteUserResult').textContent = await res.text();
+    };
+
+    // AGREGAR PELÍCULA FAVORITA
+    document.getElementById('addFavForm').onsubmit = async e => {
+      e.preventDefault();
+      const Name = e.target.Name.value;
+      const Title = e.target.Title.value;
+      const res = await fetch(`${API}/users/${encodeURIComponent(Name)}/movies/${encodeURIComponent(Title)}`, {
+        method: 'POST'
+      });
+      document.getElementById('addFavResult').textContent = await res.text();
+    };
+
+    // ELIMINAR PELÍCULA FAVORITA
+    document.getElementById('delFavForm').onsubmit = async e => {
+      e.preventDefault();
+      const Name = e.target.Name.value;
+      const Title = e.target.Title.value;
+      const res = await fetch(`${API}/users/${encodeURIComponent(Name)}/movies/${encodeURIComponent(Title)}`, {
+        method: 'DELETE'
+      });
+      document.getElementById('delFavResult').textContent = await res.text();
+    };
+
+    // LISTAR PELÍCULAS
+    document.getElementById('getMoviesBtn').onclick = async () => {
+      const res = await fetch(`${API}/movies`);
+      document.getElementById('getMoviesResult').textContent = await res.text();
+    };
+
+    // BUSCAR PELÍCULA POR TÍTULO
+    document.getElementById('getMovieForm').onsubmit = async e => {
+      e.preventDefault();
+      const Title = e.target.Title.value;
+      const res = await fetch(`${API}/movies/${encodeURIComponent(Title)}`);
+      document.getElementById('getMovieResult').textContent = await res.text();
+    };
+
+    // BUSCAR GÉNERO
+    document.getElementById('getGenreForm').onsubmit = async e => {
+      e.preventDefault();
+      const Name = e.target.Name.value;
+      const res = await fetch(`${API}/movies/genre/${encodeURIComponent(Name)}`);
+      document.getElementById('getGenreResult').textContent = await res.text();
+    };
+
+    // BUSCAR DIRECTOR
+    document.getElementById('getDirectorForm').onsubmit = async e => {
+      e.preventDefault();
+      const Name = e.target.Name.value;
+      const res = await fetch(`${API}/movies/director/${encodeURIComponent(Name)}`);
+      document.getElementById('getDirectorResult').textContent = await res.text();
+    };
+  </script>
+</body>
+</html>

@@ -1,19 +1,37 @@
 openapi: 3.0.0
 info:
   description: >-
-    This API allows a user to receive information on climate movies and
-    directors so that he can learn more about movies he has watched or is
-    interested in. Also he can create a profile, so he can save data about his
-    favorite movies. The user can use the following endpoints to navigate through the application:
-  title: Welcome to my Express API for Movies and Users!
+    Esta API permite acceder a información sobre películas relacionadas con el cambio climático y sus directores, facilitando a los usuarios la exploración de títulos que han visto o que les interesan. Además, ofrece la posibilidad de crear un perfil para guardar sus películas favoritas. A continuación, se detallan los endpoints disponibles para interactuar con el sistema:
+  title: Express api para peliculas y usuarios
   version: 1.0.0
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 paths:
   /login:
     post:
       summary: Login for user with HTTP authentication
       tags:
         - login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Name:
+                  type: string
+                  example: usuario
+                Password:
+                  type: string
+                  example: password123
       responses:
+        '200':
+          description: Login exitoso
         '400':
           description: bad request, credentials do not match.
   /users:
@@ -21,6 +39,25 @@ paths:
       summary: Create and add a new user.
       tags:
         - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Name:
+                  type: string
+                  example: Kim
+                Password:
+                  type: string
+                  example: rain345
+                Email:
+                  type: string
+                  example: kim@gmail.com
+                Birthday:
+                  type: string
+                  example: 1984-08-05
       responses:
         '201':
           description: New user created
@@ -29,23 +66,23 @@ paths:
               schema:
                 type: object
                 properties:
-                  name:
+                  Name:
                     type: string
                     description: The new user's name.
                     example: Kim
-                  password:
+                  Password:
                     type: string
                     description: The new user's password.
                     example: rain345
-                  email:
+                  Email:
                     type: string
                     description: The new user's email address.
                     example: kim@gmail.com
-                  birthday:
+                  Birthday:
                     type: string
                     description: The new user's birthday.
                     example: 1984-08-05
-                  favoriteMovies:
+                  FavoriteMovies:
                     type: array
                     description: List of the user's favorite movies.
                     items:
@@ -53,7 +90,7 @@ paths:
                       description: Id of a favorite movie
                       example: 624e9ae5122deed3780f1f66
                   _id:
-                    type: integer
+                    type: string
                     description: The user ID.
                     example: 623rrd1cbb04432b23ef7543
         '400':
@@ -345,10 +382,6 @@ paths:
                     type: string
                     description: The user's name.
                     example: Mona2
-                  Password:
-                    type: string
-                    description: Encrypted password of user.
-                    example: hufflepuff345
                   Birthday:
                     type: string
                     description: birthday of user.
@@ -370,6 +403,25 @@ paths:
       summary: Update user information by user Name.
       tags:
         - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Name:
+                  type: string
+                  example: Mona2
+                Password:
+                  type: string
+                  example: hufflepuff345
+                Email:
+                  type: string
+                  example: example@gmail.com
+                Birthday:
+                  type: string
+                  example: 1981-02-04
       responses:
         '200':
           description: username was updated
@@ -382,19 +434,19 @@ paths:
                     type: string
                     description: The user ID.
                     example: 624fedd4a07209d40ae5b0e9
-                  name:
+                  Name:
                     type: string
                     description: The user's name.
                     example: Mona2
-                  password:
+                  Password:
                     type: string
                     description: password of user.
                     example: hufflepuff345
-                  birthday:
+                  Birthday:
                     type: string
                     description: birthday of user.
                     example: 1981-02-04
-                  favoriteMovies:
+                  FavoriteMovies:
                     type: array
                     description: List of the user's favorite movies.
                     items:
@@ -420,7 +472,8 @@ paths:
                 example: Tom was deleted.
         '400':
           description: bad request, user was not found.
-components: {}
+security:
+  - bearerAuth: []
 tags:
   - name: login
     description: all endpoints regarding site login and authentication

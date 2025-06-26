@@ -67,7 +67,10 @@ function handlePostUsers() {
                             Birthday: req.body.Birthday
                         })
                         .then((user) => {
-                            res.status(201).json(user)
+                            // Ocultar el campo Password en la respuesta
+                            const userObj = user.toObject();
+                            delete userObj.Password;
+                            res.status(201).json(userObj)
                         })
                         .catch((err) => {
                             console.error(err);
@@ -194,7 +197,10 @@ function handleGetUserByName() {
                     res.status(404).send('User not found');
                     return;
                 }
-                res.status(200).json(user);
+                // Ocultar el campo Password en la respuesta
+                const userObj = user.toObject();
+                delete userObj.Password;
+                res.status(200).json(userObj);
             });
     };
 }
@@ -225,7 +231,10 @@ function handlePutUserByName() {
                     console.error(err)
                     res.status(500).send('Error: ' + err)
                 } else {
-                    res.status(200).json(updatedUser);
+                    // Ocultar el campo Password en la respuesta
+                    const userObj = updatedUser.toObject();
+                    delete userObj.Password;
+                    res.status(200).json(userObj);
                 }
             }
         )
